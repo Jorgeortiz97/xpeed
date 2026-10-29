@@ -18,3 +18,4 @@ socket2 = { version = "0.5", features = ["all"] }
 
 [profile.release]
 lto = true
+strip = true
