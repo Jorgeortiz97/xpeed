@@ -21,6 +21,7 @@ jobs:
           [ "$GITHUB_REF_NAME" = "v$version" ] || { echo "tag $GITHUB_REF_NAME != v$version"; exit 1; }
 
   build:
+    needs: version
     runs-on: ubuntu-24.04
     strategy:
       matrix:

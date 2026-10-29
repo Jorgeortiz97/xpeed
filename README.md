@@ -62,14 +62,14 @@ xpeed client 10.0.0.2 --vlan 100,200 --vlan-proto 802.1ad --dscp ef
 
 | Option | Side | Meaning |
 |---|---|---|
-| `-B, --bind` | both | Server: interface or local address. Client: source address or egress interface. |
+| `-B, --bind` | both | Server: interface, or local address (needed for IPv6 clients). Client: source address or egress interface. |
 | `-p, --port` | both | Control and data port (default 5301). |
 | `-m, --mode` | both | XDP mode: `auto`, `native` or `skb`. |
 | `-i, --interval` | both | Seconds between reports. |
 | `-1, --one-off` | server | Exit after one test. |
 | `-t, --time` | client | Duration in seconds (default 10). |
-| `-s, --size` | client | Frame size including FCS and VLAN tags. |
-| `-b, --bitrate` / `--pps` | client | Total rate (`k/M/G/T`); defaults to line rate. |
+| `-s, --size` | client | Frame size including FCS and VLAN tags (default: 64 for IPv4, 84 for IPv6, plus 4 per tag). |
+| `-b, --bitrate` / `--pps` | client | Total rate (`k/M/G/T`); defaults to and is capped at line rate, unlimited if the link speed is unknown. |
 | `-P, --parallel` / `--cpus` | client | Number of streams, or the CPUs to send from. |
 | `--src-port` | client | Source port of stream 0; stream N uses port + N. |
 | `--dst-mac` | client | Next-hop MAC if not in the neighbour table. |
@@ -93,7 +93,7 @@ it and is much slower. `auto` picks native when the driver supports it.
 [SUM]   0.00-10.00  sec    148804760    14.88 Mpps      7.62 Gbit/s     4000/148808760 (0.00%)     0.812 us       0  receiver
 ```
 
-- **TX drops**: frames that never left the client.
+- **TX drops**: frames that never left the client (`-` if they can't be counted).
 - **Lost/Total**: frames sent by the driver that never reached the server.
 - **Gaps/Expected**: shown in server interval rows, which can't separate
   loss from TX drops.

@@ -2,7 +2,7 @@
 //! by a veth pair. They need root; the README shows how to run them.
 
 use std::{
-    io::{BufRead, BufReader},
+    io::{BufRead, BufReader, Read},
     process::{Child, Command, Output, Stdio},
     sync::atomic::{AtomicUsize, Ordering::Relaxed},
 };
@@ -43,16 +43,17 @@ impl Veth {
     }
 
     /// Bounded, so a stuck control exchange fails the test instead of hanging it.
+    /// `ip netns exec` execs `timeout`, so the child's pid is timeout's.
     fn exec(ns: &str, args: &[&str]) -> Command {
         let mut cmd = Command::new("ip");
-        cmd.args(["netns", "exec", ns, "timeout", "30", XPEED]).args(args);
+        cmd.args(["netns", "exec", ns, "timeout", "-k", "5", "30", XPEED]).args(args);
         cmd
     }
 
-    /// Starts a one-off server and waits until its XDP program is attached.
     fn server(&mut self, bind: &str) {
         let mut child = Self::exec(&self.server, &["server", "-1", "-B", bind])
             .stdout(Stdio::piped())
+            .stderr(Stdio::piped())
             .spawn()
             .unwrap();
         let mut lines = BufReader::new(child.stdout.take().unwrap()).lines();
@@ -69,15 +70,22 @@ impl Veth {
         args.extend(opts.split_whitespace());
         let Output { status, stdout, stderr } = Self::exec(&self.client, &args).output().unwrap();
         assert!(status.success(), "client failed: {}", String::from_utf8_lossy(&stderr));
-        assert!(self.xpeed.take().unwrap().wait().unwrap().success(), "server failed");
+        let mut server = self.xpeed.take().unwrap();
+        let status = server.wait().unwrap();
+        let mut errors = String::new();
+        server.stderr.take().unwrap().read_to_string(&mut errors).unwrap();
+        // A one-off server prints session errors but still exits with 0.
+        assert!(status.success() && !errors.contains("error"), "server failed: {errors}");
         serde_json::from_slice(&stdout).unwrap()
     }
 }
 
 impl Drop for Veth {
     fn drop(&mut self) {
+        // SIGKILL would stop only `timeout` and orphan xpeed; SIGTERM is
+        // forwarded, and xpeed detaches its XDP program on it.
         if let Some(mut child) = self.xpeed.take() {
-            let _ = child.kill();
+            unsafe { libc::kill(child.id() as libc::pid_t, libc::SIGTERM) };
             let _ = child.wait();
         }
         for ns in [&self.client, &self.server] {
@@ -86,7 +94,6 @@ impl Drop for Veth {
     }
 }
 
-/// Every frame the driver accepted reached the server, at about the requested rate.
 fn assert_delivered(report: &Value, streams: usize, frame_size: u64) {
     let sum = &report["sum"];
     let n = |k: &str| sum[k].as_u64().unwrap();
@@ -99,7 +106,6 @@ fn assert_delivered(report: &Value, streams: usize, frame_size: u64) {
     assert_eq!(n("out_of_order"), 0);
 }
 
-/// The client's report of a one-second test against a server bound to `bind`.
 fn run(bind: &str, target: &str, opts: &str) -> Value {
     let mut veth = Veth::new();
     veth.server(bind);

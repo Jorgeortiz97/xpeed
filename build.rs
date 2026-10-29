@@ -16,8 +16,8 @@ fn main() {
     println!("cargo:rerun-if-env-changed=DEB_HOST_MULTIARCH");
     let out = PathBuf::from(env::var_os("OUT_DIR").unwrap());
     // <linux/types.h> pulls <asm/types.h> from the Debian multiarch include dir.
-    // These are the build host's headers: the BPF objects only depend on the
-    // target's endianness, so cross and musl builds can use them as well.
+    // Defaults to the build machine's headers: the BPF objects only depend on
+    // the target's endianness, so cross and musl builds can use them as well.
     let multiarch = env::var("DEB_HOST_MULTIARCH")
         .unwrap_or_else(|_| env::var("HOST").unwrap().replace("-unknown-", "-"));
     let target = match env::var("CARGO_CFG_TARGET_ENDIAN").as_deref() {
