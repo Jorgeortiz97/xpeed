@@ -38,7 +38,7 @@ The end-to-end tests send traffic over a veth pair between two network
 namespaces and need root. Cargo builds them as you and runs them with sudo:
 
 ```
-cargo test --config 'target."cfg(target_os = \"linux\")".runner = "sudo -E"' -- --include-ignored
+cargo test-root -- --include-ignored
 ```
 
 Static binaries for x86_64 and aarch64 are attached to each
@@ -82,6 +82,10 @@ xpeed client 10.0.0.2 --vlan 100,200 --vlan-proto 802.1ad --dscp ef
 Rates count Ethernet frames including FCS. Ctrl-C on the client stops the
 test and still prints the report.
 
+Performance depends on the XDP mode (`-m`). Native mode runs in the driver
+before the kernel allocates a socket buffer; generic (`skb`) mode runs after
+it and is much slower. `auto` picks native when the driver supports it.
+
 ### Output
 
 ```
@@ -95,6 +99,23 @@ test and still prints the report.
   loss from TX drops.
 - **OOO**: out-of-order frames.
 
+## Benchmarks
+
+xpeed against iperf3 3.18 (UDP), one stream, 10 s over a 1 Gbit/s link:
+
+- Sender: 4× Cortex-A53 @ 1.6 GHz, 1 GB RAM.
+- Receiver: 2× Cortex-A53 @ 1.0 GHz, 1 GB RAM.
+
+| Frame | xpeed sent | xpeed received | iperf3 (no loss) |
+|---|---|---|---|
+| 64 B | 808 kpps | 259 kpps | 74 kpps |
+| 512 B | 962 Mbit/s | 949 Mbit/s | 297 Mbit/s |
+| 1518 B | 986 Mbit/s | 986 Mbit/s | 854 Mbit/s |
+
+One xpeed stream sends 11 times more packets than iperf3, and two reach
+1.36 Mpps (91% of line rate). The receiver is the limit: it takes about
+250 kpps without loss.
+
 ## Limitations
 
 - UDP only, no IPv6 link-local targets.
@@ -103,7 +124,7 @@ test and still prints the report.
 - `--vlan` tags frames on the routed interface; VLAN sub-interfaces can't
   be used.
 - Each stream needs its own CPU on the client and a single RX queue on the
-  server.
+  server. Leave one CPU free: a stream on every CPU can starve the system.
 
 ## Bugs
 

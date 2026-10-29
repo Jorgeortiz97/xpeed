@@ -1,0 +1,4 @@
+[alias]
+# Builds as the user and runs only the test binaries with sudo, which the
+# veth tests need (`cargo test-root -- --include-ignored`).
+test-root = ["test", "--config", "target.'cfg(target_os = \"linux\")'.runner = 'sudo -E'"]

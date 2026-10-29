@@ -42,9 +42,10 @@ impl Veth {
         veth
     }
 
+    /// Bounded, so a stuck control exchange fails the test instead of hanging it.
     fn exec(ns: &str, args: &[&str]) -> Command {
         let mut cmd = Command::new("ip");
-        cmd.args(["netns", "exec", ns, XPEED]).args(args);
+        cmd.args(["netns", "exec", ns, "timeout", "30", XPEED]).args(args);
         cmd
     }
 

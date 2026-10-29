@@ -13,6 +13,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: Swatinem/rust-cache@v2
 
-      # The veth tests create network namespaces and load XDP programs.
       - name: Test
-        run: cargo test --locked --config 'target."cfg(target_os = \"linux\")".runner = "sudo -E"' -- --include-ignored
+        run: cargo test-root --locked -- --include-ignored
