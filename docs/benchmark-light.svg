@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="840" height="214" viewBox="0 0 840 214" font-family="system-ui, -apple-system, &quot;Segoe UI&quot;, sans-serif" role="img" aria-labelledby="t d">
+<title id="t">xpeed vs iperf3</title>
+<desc id="d">One xpeed stream sends 808 kpps of 64-byte frames against 74 kpps for iperf3. At 70 kpps, xpeed uses 22% of a core on the sender (iperf3 90%) and 47% on the receiver (iperf3 114%).</desc>
+<rect width="840" height="214" rx="8" fill="#fcfcfb"/>
+<rect x="24" y="24" width="12" height="12" rx="3" fill="#2a78d6"/>
+<text x="42" y="34.5" font-size="13" fill="#52514e">xpeed</text>
+<rect x="102" y="24" width="12" height="12" rx="3" fill="#eb6834"/>
+<text x="120" y="34.5" font-size="13" fill="#52514e">iperf3</text>
+<text x="816" y="34.5" font-size="12" fill="#898781" text-anchor="end">1 Gbit/s link, 10 s per run, UDP</text>
+<text x="24.0" y="68" font-size="15" font-weight="600" fill="#0b0b0b">Packet rate</text>
+<text x="24.0" y="87" font-size="12" fill="#52514e">64-byte frames, one stream</text>
+<text x="68.0" y="123.5" font-size="13" fill="#52514e" text-anchor="end">xpeed</text>
+<path d="M76.0,108.0 h114.7 a4,4 0 0 1 4,4 v14.0 a4,4 0 0 1 -4,4 h-114.7 z" fill="#2a78d6"/>
+<text x="202.66666666666663" y="123.5" font-size="13" font-weight="600" fill="#0b0b0b">808 kpps</text>
+<text x="68.0" y="155.5" font-size="13" fill="#52514e" text-anchor="end">iperf3</text>
+<path d="M76.0,140.0 h6.9 a4,4 0 0 1 4,4 v14.0 a4,4 0 0 1 -4,4 h-6.9 z" fill="#eb6834"/>
+<text x="94.86798679867987" y="155.5" font-size="13" font-weight="600" fill="#0b0b0b">74 kpps</text>
+<line x1="76.0" y1="102" x2="76.0" y2="174" stroke="#c3c2b7" stroke-width="1"/>
+<text x="24.0" y="198" font-size="12" fill="#898781">higher is better</text>
+<text x="298.66666666666663" y="68" font-size="15" font-weight="600" fill="#0b0b0b">Sender CPU</text>
+<text x="298.66666666666663" y="87" font-size="12" fill="#52514e">at 70 kpps, % of one core</text>
+<text x="342.66666666666663" y="123.5" font-size="13" fill="#52514e" text-anchor="end">xpeed</text>
+<path d="M350.7,108.0 h25.0 a4,4 0 0 1 4,4 v14.0 a4,4 0 0 1 -4,4 h-25.0 z" fill="#2a78d6"/>
+<text x="387.67407407407404" y="123.5" font-size="13" font-weight="600" fill="#0b0b0b">22%</text>
+<text x="342.66666666666663" y="155.5" font-size="13" fill="#52514e" text-anchor="end">iperf3</text>
+<path d="M350.7,140.0 h114.7 a4,4 0 0 1 4,4 v14.0 a4,4 0 0 1 -4,4 h-114.7 z" fill="#eb6834"/>
+<text x="477.33333333333326" y="155.5" font-size="13" font-weight="600" fill="#0b0b0b">90%</text>
+<line x1="350.66666666666663" y1="102" x2="350.66666666666663" y2="174" stroke="#c3c2b7" stroke-width="1"/>
+<text x="298.66666666666663" y="198" font-size="12" fill="#898781">lower is better</text>
+<text x="573.3333333333333" y="68" font-size="15" font-weight="600" fill="#0b0b0b">Receiver CPU</text>
+<text x="573.3333333333333" y="87" font-size="12" fill="#52514e">at 70 kpps, % of one core</text>
+<text x="617.3333333333333" y="123.5" font-size="13" fill="#52514e" text-anchor="end">xpeed</text>
+<path d="M625.3,108.0 h44.9 a4,4 0 0 1 4,4 v14.0 a4,4 0 0 1 -4,4 h-44.9 z" fill="#2a78d6"/>
+<text x="682.2573099415204" y="123.5" font-size="13" font-weight="600" fill="#0b0b0b">47%</text>
+<text x="617.3333333333333" y="155.5" font-size="13" fill="#52514e" text-anchor="end">iperf3</text>
+<path d="M625.3,140.0 h114.7 a4,4 0 0 1 4,4 v14.0 a4,4 0 0 1 -4,4 h-114.7 z" fill="#eb6834"/>
+<text x="751.9999999999999" y="155.5" font-size="13" font-weight="600" fill="#0b0b0b">114%</text>
+<line x1="625.3333333333333" y1="102" x2="625.3333333333333" y2="174" stroke="#c3c2b7" stroke-width="1"/>
+<text x="573.3333333333333" y="198" font-size="12" fill="#898781">lower is better</text>
+</svg>

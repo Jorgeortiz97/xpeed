@@ -37,9 +37,9 @@ jobs:
 
       - name: Package
         run: |
-          name=xpeed-${GITHUB_REF_NAME}-${{ matrix.target }}
+          name=xpeed-${{ matrix.target }}
           mkdir "$name"
-          cp target/${{ matrix.target }}/release/xpeed README.md "$name"/
+          cp target/${{ matrix.target }}/release/xpeed README.md LICENSE "$name"/
           tar czf "$name.tar.gz" "$name"
           sha256sum "$name.tar.gz" > "$name.tar.gz.sha256"
 

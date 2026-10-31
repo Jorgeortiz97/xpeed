@@ -1,8 +1,35 @@
 # Xpeed
 
+[![CI](https://github.com/Jorgeortiz97/xpeed/actions/workflows/ci.yml/badge.svg)](https://github.com/Jorgeortiz97/xpeed/actions/workflows/ci.yml)
+[![Release](https://img.shields.io/github/v/release/Jorgeortiz97/xpeed)](https://github.com/Jorgeortiz97/xpeed/releases/latest)
+[![License: GPL-2.0](https://img.shields.io/badge/license-GPL--2.0-blue)](LICENSE)
+
+**Up to 11× the packet rate of iperf3 from one core, with 4 to 6 times less
+CPU at the same rate.**
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="docs/benchmark-dark.svg">
+  <img alt="xpeed vs iperf3: 808 kpps against 74 kpps from one stream; at 70 kpps, 22% against 90% of a core on the sender and 47% against 114% on the receiver" src="docs/benchmark-light.svg">
+</picture>
+
 High-performance network benchmarking for Linux, powered by eBPF/XDP. It
 works like iperf3 (client, server, TCP control channel, interval reports),
 but both data paths run in XDP. Only UDP is supported for now.
+
+## Quick start
+
+Download a static binary (`x86_64` or `aarch64`):
+
+```
+curl -L https://github.com/Jorgeortiz97/xpeed/releases/latest/download/xpeed-x86_64-unknown-linux-musl.tar.gz | tar xz
+```
+
+Then run the server on the receiver and the client on the sender:
+
+```
+sudo xpeed-x86_64-unknown-linux-musl/xpeed server -B eth0
+sudo xpeed-x86_64-unknown-linux-musl/xpeed client 10.0.0.2
+```
 
 ## How it works
 
@@ -34,20 +61,10 @@ but both data paths run in XDP. Only UDP is supported for now.
 cargo build --release
 ```
 
-The end-to-end tests send traffic over a veth pair between two network
-namespaces and need root. Cargo builds them as you and runs them with sudo:
+The end-to-end tests need root:
 
 ```
 cargo test-root -- --include-ignored
-```
-
-Static binaries for x86_64 and aarch64 are attached to each
-[release](https://github.com/Jorgeortiz97/xpeed/releases). To publish one,
-bump `version` in `Cargo.toml` and push a matching tag:
-
-```
-git tag v0.1.0
-git push origin v0.1.0
 ```
 
 ## Usage
@@ -101,10 +118,7 @@ it and is much slower. `auto` picks native when the driver supports it.
 
 ## Benchmarks
 
-xpeed against iperf3 3.18 (UDP), one stream, 10 s over a 1 Gbit/s link:
-
-- Sender: 4× Cortex-A53 @ 1.6 GHz, 1 GB RAM.
-- Receiver: 2× Cortex-A53 @ 1.0 GHz, 1 GB RAM.
+xpeed against iperf3 (UDP), one stream, 10 s over a 1 Gbit/s link:
 
 | Frame | xpeed sent | xpeed received | iperf3 (no loss) |
 |---|---|---|---|
@@ -112,9 +126,19 @@ xpeed against iperf3 3.18 (UDP), one stream, 10 s over a 1 Gbit/s link:
 | 512 B | 962 Mbit/s | 949 Mbit/s | 297 Mbit/s |
 | 1518 B | 986 Mbit/s | 986 Mbit/s | 854 Mbit/s |
 
-One xpeed stream sends 11 times more packets than iperf3, and two reach
-1.36 Mpps (91% of line rate). The receiver is the limit: it takes about
-250 kpps without loss.
+xpeed sent up to 11 times more packets per second than iperf3, and two
+streams reached 91% of line rate. Lower received rates come from the
+receiving machine, not from xpeed.
+
+CPU use at the same rate, in percent of one core (whole system):
+
+| Test | xpeed sender | iperf3 sender | xpeed receiver | iperf3 receiver |
+|---|---|---|---|---|
+| 64 B, 50 kpps | 10% | 59% | 35% | 92% |
+| 64 B, 70 kpps | 22% | 90% | 47% | 114% |
+| 1518 B, max rate | 33% | 97% | 52% | 132% |
+
+In the last row xpeed also moved more data: 986 Mbit/s against 855 Mbit/s.
 
 ## Limitations
 
@@ -130,5 +154,10 @@ One xpeed stream sends 11 times more packets than iperf3, and two reach
 
 Report bugs at <https://github.com/Jorgeortiz97/xpeed/issues>.
 
+## License
+
+GPL-2.0, see [LICENSE](LICENSE).
+
 ## Author
 
+[Jorge Ortiz](https://github.com/Jorgeortiz97)
